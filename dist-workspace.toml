@@ -20,6 +20,6 @@ targets = [
 ]
 install-path = "CARGO_HOME"
 install-updater = false
-publish-jobs = ["npm"]
+publish-jobs = ["./publish-npm"]
 github-attestations = true
 pr-run-mode = "plan"

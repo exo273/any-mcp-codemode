@@ -14,7 +14,7 @@ esos mismos archivos. No tenemos código de empaquetado propio.
 | GitHub Releases | archivos + `sha256` + atestaciones | `release.yml` (generado por `dist generate`) | ✅ en cada tag `v*` |
 | Instalador shell | `curl -LsSf https://github.com/exo273/any-mcp-codemode/releases/latest/download/any-mcp-codemode-installer.sh \| sh` | cargo-dist | ✅ |
 | Instalador PowerShell | `irm https://github.com/exo273/any-mcp-codemode/releases/latest/download/any-mcp-codemode-installer.ps1 \| iex` | cargo-dist | ✅ |
-| npm | `npx -y any-mcp-codemode serve` | cargo-dist (`publish-jobs = ["npm"]`) | ⏳ falta el secreto `NPM_TOKEN` |
+| npm | `npx -y any-mcp-codemode serve` | `publish-npm.yml` con [trusted publishing](https://docs.npmjs.com/trusted-publishers) (OIDC, sin token; procedencia) | ⏳ falta la primera publicación |
 | Docker | `docker run -i --rm -v ./cfg:/config:ro ghcr.io/exo273/any-mcp-codemode` | `docker.yml`, desde los binarios musl del release | ✅ en cada release |
 | MCP Registry | `server.json` (paquete OCI) | `mcp-publisher` | ⏳ cuando exista la primera imagen |
 | Código fuente | `cargo install --git https://github.com/exo273/any-mcp-codemode` | cargo | ✅ |
@@ -29,6 +29,13 @@ x86_64/arm64 (**musl estático**: un binario para cualquier distro y para la ima
 3. `release.yml` compila y publica el GitHub Release. Después `docker.yml` arma la imagen con esos mismos binarios.
 
 `dist plan` (que también corre en cada PR) muestra los artefactos sin compilar nada.
+
+## Trusted publishing en npm
+
+`release.yml` llama a `publish-npm.yml` (cargo-dist `publish-jobs = ["./publish-npm"]`), que
+publica con un token OIDC que genera GitHub Actions. No hay ningún secreto de npm en el repo.
+npm valida el workflow **que llama**, así que el trusted publisher en npmjs.com se configura
+como `exo273` / `any-mcp-codemode` / `release.yml` con **npm publish** permitido.
 
 ## Imagen Docker
 
