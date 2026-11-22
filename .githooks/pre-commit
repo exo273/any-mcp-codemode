@@ -1,0 +1,4 @@
+#!/bin/sh
+# Format gate before every commit (CI runs the same check): docs/en/commits.md
+command -v cargo >/dev/null 2>&1 || exit 0
+exec cargo fmt --check
