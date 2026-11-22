@@ -1,0 +1,25 @@
+# Release pipeline (cargo-dist): binaries, shell/PowerShell installers and the npm wrapper,
+# all generated from this table. Regenerate CI with `dist generate` after editing.
+# https://axodotdev.github.io/cargo-dist/book/reference/config.html
+
+[workspace]
+members = ["cargo:."]
+
+[dist]
+cargo-dist-version = "0.34.0"
+ci = "github"
+installers = ["shell", "powershell", "npm"]
+# Static musl on Linux: one binary for every distro and for `FROM scratch` Docker.
+targets = [
+    "aarch64-apple-darwin",
+    "x86_64-apple-darwin",
+    "x86_64-unknown-linux-musl",
+    "aarch64-unknown-linux-musl",
+    "x86_64-pc-windows-msvc",
+    "aarch64-pc-windows-msvc",
+]
+install-path = "CARGO_HOME"
+install-updater = false
+publish-jobs = ["npm"]
+github-attestations = true
+pr-run-mode = "plan"

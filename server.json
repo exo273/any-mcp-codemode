@@ -1,0 +1,32 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.exo273/any-mcp-codemode",
+  "title": "any-mcp-codemode",
+  "description": "Turn any MCP servers into one code-mode MCP server: the model writes JavaScript in a QuickJS sandbox",
+  "repository": {
+    "url": "https://github.com/exo273/any-mcp-codemode",
+    "source": "github"
+  },
+  "version": "0.1.0-rc.1",
+  "packages": [
+    {
+      "registryType": "oci",
+      "identifier": "ghcr.io/exo273/any-mcp-codemode:0.1.0-rc.1",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "AMC_CONFIG",
+          "description": "Config path inside the container (default /config/any-mcp-codemode.json)",
+          "isRequired": false
+        },
+        {
+          "name": "AMC_STORE",
+          "description": "History store URL (default sqlite:/data/history.db; postgres://... supported)",
+          "isRequired": false
+        }
+      ]
+    }
+  ]
+}
