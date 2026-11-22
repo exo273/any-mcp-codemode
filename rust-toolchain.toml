@@ -1,0 +1,3 @@
+# Every build (local, CI, release containers such as cargo-xwin) uses current stable.
+[toolchain]
+channel = "stable"
