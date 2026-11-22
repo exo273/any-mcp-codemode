@@ -7,11 +7,11 @@
     "url": "https://github.com/exo273/any-mcp-codemode",
     "source": "github"
   },
-  "version": "0.1.0-rc.1",
+  "version": "0.1.0-rc.2",
   "packages": [
     {
       "registryType": "oci",
-      "identifier": "ghcr.io/exo273/any-mcp-codemode:0.1.0-rc.1",
+      "identifier": "ghcr.io/exo273/any-mcp-codemode:0.1.0-rc.2",
       "transport": {
         "type": "stdio"
       },

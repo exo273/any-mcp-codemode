@@ -43,6 +43,8 @@ jobs:
       - uses: dtolnay/rust-toolchain@1.94
       - uses: Swatinem/rust-cache@v2
       - run: cargo check --locked
+      # The release builds with this profile (dist-workspace.toml); catch a missing/broken one before tagging.
+      - run: cargo check --locked --profile dist
 
   supply-chain:
     runs-on: ubuntu-latest
