@@ -10,8 +10,60 @@ escribe JavaScript que llama a tus herramientas dentro de un sandbox QuickJS. In
 en [Code Mode de Cloudflare](https://developers.cloudflare.com/agents/tools/codemode/api-reference/),
 sin depender de Cloudflare. Un solo binario en Rust para Windows, macOS, Linux y Docker.
 
-> **Status / Estado:** design phase / fase de diseño.
+> **Status / Estado:** v0.1 (phase 1) — stdio server, `run`, multi-server, SQLite/Postgres history, en/es.
+> No prebuilt binaries yet (phase 2) / aún sin binarios precompilados (fase 2).
 
+## Quick start / Inicio rápido
+
+```bash
+cargo install --git https://github.com/exo273/any-mcp-codemode
+any-mcp-codemode init          # writes a starter config / escribe una config inicial
+any-mcp-codemode doctor        # connects and lists tools / conecta y lista herramientas
+```
+
+The config uses the standard `mcpServers` format, so you can paste the servers you
+already have. / La config usa el formato estándar `mcpServers`, así que puedes pegar los
+servidores que ya tienes:
+
+```jsonc
+{
+  "mcpServers": {
+    "github": { "url": "https://api.githubcopilot.com/mcp/", "headers": { "Authorization": "Bearer ${GITHUB_TOKEN}" } },
+    "fs": { "command": "npx", "args": ["-y", "@modelcontextprotocol/server-filesystem", "."] }
+  }
+}
+```
+
+Then register **one** server in your client instead of N. / Luego registra **un** servidor
+en tu cliente en lugar de N:
+
+```bash
+hermes mcp add codemode --command any-mcp-codemode --args serve   # Hermes (verified / verificado)
+claude mcp add codemode -- any-mcp-codemode serve                  # Claude Code
+```
+
+The model gets one `code` tool and writes / El modelo recibe una sola herramienta `code` y escribe:
+
+```js
+const [issues, files] = await Promise.all([
+  codemode.github.list_issues({ owner: "exo273", repo: "any-mcp-codemode" }),
+  codemode.fs.list_directory({ path: "." }),
+]);
+return { open: issues.length, files: files.length };
+```
+
+| Command | What it does / Qué hace |
+|---|---|
+| `serve` | MCP server over stdio / servidor MCP por stdio |
+| `run <file\|->` | Run JS once (scripts, CI) / ejecuta JS una vez |
+| `doctor` | Connect + list tools / conecta y lista herramientas |
+| `types` | TypeScript the model sees / el TypeScript que ve el modelo |
+| `history` | Recent executions / ejecuciones recientes |
+| `init` | Starter config / config inicial |
+
+`--lang es` or `AMC_LANG=es` switches the interface language. / cambia el idioma.
+
+## Documentation / Documentación
 | | English | Español |
 |---|---|---|
 | Design | [docs/en/design.md](docs/en/design.md) | [docs/es/design.md](docs/es/design.md) |

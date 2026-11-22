@@ -1,0 +1,66 @@
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  CARGO_TERM_COLOR: always
+  RUSTFLAGS: -D warnings
+
+jobs:
+  # One job, one matrix: the same steps on every OS. Postgres runs where service containers exist (Linux).
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, ubuntu-24.04-arm, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    services:
+      postgres:
+        image: ${{ startsWith(matrix.os, 'ubuntu') && 'postgres:17-alpine' || '' }}
+        env:
+          POSTGRES_PASSWORD: amc
+          POSTGRES_DB: amc
+        ports: ["5432:5432"]
+        options: --health-cmd pg_isready --health-interval 2s --health-retries 20
+    env:
+      AMC_TEST_POSTGRES: ${{ startsWith(matrix.os, 'ubuntu') && 'postgres://postgres:amc@localhost:5432/amc' || '' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo fmt --check
+      - run: cargo clippy --all-targets --locked
+      - run: cargo test --locked
+
+  msrv:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@1.88
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo check --locked
+
+  supply-chain:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: EmbarkStudios/cargo-deny-action@v2
+
+  # Rule zero: report the size budget (docs/en/design.md §3). Fails above 3,000 lines of non-test Rust.
+  size-budget:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Count non-test, non-blank, non-comment lines in src/
+        run: |
+          total=0
+          for f in src/*.rs; do
+            n=$(awk '/#\[cfg\(test\)\]/{exit} {print}' "$f" | grep -cvE '^\s*(//.*)?$' || true)
+            echo "$n $f"; total=$((total + n))
+          done
+          echo "total=$total (budget 3000)"
+          test "$total" -le 3000
