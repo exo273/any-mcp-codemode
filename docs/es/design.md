@@ -120,7 +120,7 @@ driver se elige en ejecución según la URL; los drivers se instalan con
 
 - Solo tipos de columna portables: `TEXT` para ids, JSON y fechas (RFC 3339), `BIGINT` para números.
 - Solo SQL portable, sin funciones específicas de un motor.
-- La fase 0 debe comprobar que un mismo estilo de placeholder sirve en ambos motores. Plan B: reescribir `?` → `$n` en dos líneas dentro de `store.rs`.
+- Los placeholders se escriben siempre como `$1, $2…`: se verificó que funcionan en ambos motores, mientras que `?` falla en Postgres ([spikes/README.md](../../spikes/README.md)).
 
 | Tabla | Propósito | La usa |
 |---|---|---|
@@ -209,7 +209,7 @@ integración usan el binario real por stdio con un servidor de origen real. Sin 
 
 | Fase | Entregable | Criterio de salida |
 |---|---|---|
-| 0 | Spike: QuickJS + 1 servidor de origen real, concurrencia con `Promise.all` | 2 llamadas en paralelo tardan ~max(t), no la suma(t) |
+| 0 ✅ | Spike: QuickJS + 1 servidor de origen real, concurrencia con `Promise.all`, límites, sqlx Any | Hecho: 3×500 ms en 522 ms, interrupción a los 300 ms, OOM capturado, `$n` en ambas BD ([resultados](../../spikes/README.md)) |
 | 1 | `serve` (stdio), `run`, multiservidor, tipos, límites, store SQLite, i18n en/es | Funciona en local desde Claude Code y Hermes |
 | 2 | Matriz de CI, releases, npm, Docker | `npx -y any-mcp-codemode` funciona en los 3 sistemas operativos |
 | 3 | `--http` + tokens, Postgres, `install`/`import` | Desplegado en Helion detrás de Dokploy |

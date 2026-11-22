@@ -123,7 +123,7 @@ Constraints of [`sqlx::any`](https://docs.rs/sqlx/latest/sqlx/any/index.html)
 
 - Only portable column types: `TEXT` for ids, JSON and timestamps (RFC 3339), `BIGINT` for numbers.
 - Portable SQL only, no engine-specific features.
-- Phase 0 must verify that one placeholder style works in both engines. Fallback: a two-line `?` → `$n` rewrite in `store.rs`.
+- Always write placeholders as `$1, $2…`: verified to work on both engines, while `?` fails on Postgres ([spikes/README.md](../../spikes/README.md)).
 
 Two tables in v1. Snippets, approvals and API keys get added **as rows/columns
 when needed**, never as new subsystems.
@@ -220,7 +220,7 @@ real binary over stdio with a real upstream. No mocks of rmcp or QuickJS.
 
 | Phase | Deliverable | Exit criterion |
 |---|---|---|
-| 0 | Spike: QuickJS + 1 real upstream, `Promise.all` concurrency | 2 parallel calls take ~max(t), not sum(t) |
+| 0 ✅ | Spike: QuickJS + 1 real upstream, `Promise.all` concurrency, limits, sqlx Any | Done: 3×500 ms in 522 ms, interrupt at 300 ms, OOM caught, `$n` on both DBs ([results](../../spikes/README.md)) |
 | 1 | `serve` (stdio), `run`, multi-server, types, limits, SQLite store, i18n en/es | Works from Claude Code + Hermes locally |
 | 2 | CI matrix, releases, npm, Docker | `npx -y any-mcp-codemode` works on 3 OS |
 | 3 | `--http` + tokens, Postgres, `install`/`import` | Deployed on Helion behind Dokploy |
