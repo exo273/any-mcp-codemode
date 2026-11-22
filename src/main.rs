@@ -145,7 +145,12 @@ async fn real_main() -> Result<(), String> {
 
     let cfg = Config::load(&path)
         .map_err(|e| format!("{}\n{}", t!("CM0001", reason = e), t!("CM0001.hint")))?;
-    let store = match cfg.store.as_deref() {
+    // `AMC_STORE` overrides the config (containers and services set it; no $HOME there).
+    let store_url = std::env::var("AMC_STORE")
+        .ok()
+        .filter(|v| !v.is_empty())
+        .or(cfg.store.clone());
+    let store = match store_url.as_deref() {
         Some("none") => None,
         url => Some(
             Store::open(&url.map_or_else(default_store, str::to_string), 500)

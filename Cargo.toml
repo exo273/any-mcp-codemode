@@ -1,6 +1,6 @@
 [package]
 name = "any-mcp-codemode"
-version = "0.1.0"
+version = "0.1.0-rc.1"
 edition = "2024"
 rust-version = "1.94"
 description = "Turn any MCP servers into one code-mode MCP server (QuickJS sandbox)"
@@ -13,7 +13,7 @@ categories = ["command-line-utilities", "development-tools"]
 include = ["src/**", "data/**", "migrations/**", "LICENSE-*", "README.md"]
 
 [dependencies]
-rmcp = { version = "3.11", default-features = false, features = ["client", "server", "transport-child-process", "transport-io", "transport-streamable-http-client-reqwest"] }
+rmcp = { version = "3.11", default-features = false, features = ["client", "server", "transport-child-process", "transport-io", "transport-streamable-http-client-reqwest", "reqwest"] }
 rquickjs = { version = "0.14", default-features = false, features = ["futures", "parallel"] }
 tokio = { version = "1.54", features = ["rt-multi-thread", "macros", "time", "process", "io-std"] }
 serde = { version = "1", features = ["derive"] }
