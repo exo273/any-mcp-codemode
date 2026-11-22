@@ -164,7 +164,7 @@ mod tests {
     /// Runs only when `AMC_TEST_POSTGRES` is set (CI service container).
     #[tokio::test]
     async fn postgres_roundtrip_and_prune() {
-        if let Ok(url) = std::env::var("AMC_TEST_POSTGRES") {
+        if let Some(url) = std::env::var("AMC_TEST_POSTGRES").ok().filter(|u| !u.is_empty()) {
             roundtrip(&url).await;
         }
     }

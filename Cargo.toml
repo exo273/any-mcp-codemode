@@ -2,7 +2,7 @@
 name = "any-mcp-codemode"
 version = "0.1.0"
 edition = "2024"
-rust-version = "1.88"
+rust-version = "1.94"
 description = "Turn any MCP servers into one code-mode MCP server (QuickJS sandbox)"
 license = "Apache-2.0 OR MIT"
 authors = ["Raimundo Gonzalez <59464019+exo273@users.noreply.github.com>"]
