@@ -406,6 +406,10 @@ mod tests {
             ),
             ("return 5", json!(5)),
             ("1 + 1", json!(2)),
+            // Code that already starts with a statement keyword runs as a function body.
+            (r#"return ("a\nb").length"#, json!(3)),
+            (r#"return "a\nb".split("\n")[0]"#, json!("a")),
+            ("if (true) { return 'y' }", json!("y")),
             ("[1, 2].map((x) => x * 2)", json!([2, 4])),
             ("", Value::Null),
         ] {
