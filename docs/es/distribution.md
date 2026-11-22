@@ -33,7 +33,7 @@ x86_64/arm64 (**musl estático**: un binario para cualquier distro y para la ima
 ## Imagen Docker
 
 - `FROM scratch` + el binario estático + certificados CA. Unos 19 MB, sin shell, corre como UID 65532.
-- `AMC_CONFIG=/config/any-mcp-codemode.json`: monta tu config en `/config` como solo lectura.
+- `AMC_CONFIG=/config/any-mcp-codemode.json`: monta tu config en `/config` como solo lectura. La imagen corre como UID 65532, así que el directorio y el archivo montados deben ser legibles por todos (p. ej. `chmod 755 dir && chmod 644 dir/any-mcp-codemode.json`); un directorio `700` falla con `Permission denied`.
 - `AMC_STORE=sqlite:/data/history.db?mode=rwc`: el historial va en el volumen `/data`. Usa `postgres://…` para un almacén compartido.
 - Los servidores de origen que necesitan `npx`/`uvx` no funcionan dentro de `scratch`. En contenedores usa servidores con `url` (HTTP streamable), o el binario nativo.
 
