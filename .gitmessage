@@ -1,0 +1,15 @@
+# <type>(<scope>)!: <english summary, imperative, lowercase, ≤72, no period>
+
+# [en]
+# <optional English body — why, not what>
+
+[es]
+# <resumen en español, una línea>
+# <cuerpo opcional en español>
+
+Docs: 
+# Signed-off-by is added by `git commit -s`
+# Refs: #123
+# BREAKING CHANGE: <english>   (+ "Cambio incompatible: ..." in [es])
+#
+# Guide / Guía: docs/en/commits.md | docs/es/commits.md

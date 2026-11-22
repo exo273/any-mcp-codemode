@@ -1,0 +1,4 @@
+#!/bin/sh
+# Validates commit messages: docs/en/commits.md | docs/es/commits.md
+PY=$(command -v python3 || command -v python)
+exec "$PY" "$(git rev-parse --show-toplevel)/scripts/check_commit.py" "$1"
