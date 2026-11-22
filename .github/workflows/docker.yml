@@ -1,8 +1,11 @@
 name: docker
 # Builds the multi-arch image from the release's static musl binaries (no Rust build, no QEMU compile).
+# Chained with workflow_run: releases created by the Release workflow's GITHUB_TOKEN don't emit
+# `release` events to other workflows (GitHub prevents recursive runs).
 on:
-  release:
-    types: [published]
+  workflow_run:
+    workflows: [Release]
+    types: [completed]
   workflow_dispatch:
     inputs:
       tag:
@@ -17,9 +20,11 @@ permissions:
 
 jobs:
   image:
+    # Only after a successful tag release (PR dry runs also complete the Release workflow).
+    if: github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && startsWith(github.event.workflow_run.head_branch, 'v'))
     runs-on: ubuntu-latest
     env:
-      TAG: ${{ github.event.release.tag_name || inputs.tag }}
+      TAG: ${{ inputs.tag || github.event.workflow_run.head_branch }}
       IMAGE: ghcr.io/${{ github.repository }}
     steps:
       - uses: actions/checkout@v4
