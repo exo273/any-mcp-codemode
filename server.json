@@ -7,11 +7,38 @@
     "url": "https://github.com/exo273/any-mcp-codemode",
     "source": "github"
   },
-  "version": "0.1.0",
+  "version": "0.1.1",
   "packages": [
     {
+      "registryType": "npm",
+      "registryBaseUrl": "https://registry.npmjs.org",
+      "identifier": "any-mcp-codemode",
+      "version": "0.1.1",
+      "transport": {
+        "type": "stdio"
+      },
+      "packageArguments": [
+        {
+          "type": "positional",
+          "value": "serve"
+        }
+      ],
+      "environmentVariables": [
+        {
+          "name": "AMC_CONFIG",
+          "description": "Path to the any-mcp-codemode.json config with your mcpServers",
+          "isRequired": false
+        },
+        {
+          "name": "AMC_LANG",
+          "description": "Interface language (en, es)",
+          "isRequired": false
+        }
+      ]
+    },
+    {
       "registryType": "oci",
-      "identifier": "ghcr.io/exo273/any-mcp-codemode:0.1.0",
+      "identifier": "ghcr.io/exo273/any-mcp-codemode:0.1.1",
       "transport": {
         "type": "stdio"
       },

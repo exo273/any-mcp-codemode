@@ -1,6 +1,6 @@
 [package]
 name = "any-mcp-codemode"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 rust-version = "1.94"
 description = "Turn any MCP servers into one code-mode MCP server (QuickJS sandbox)"
