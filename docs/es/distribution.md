@@ -14,7 +14,7 @@ esos mismos archivos. No tenemos código de empaquetado propio.
 | GitHub Releases | archivos + `sha256` + atestaciones | `release.yml` (generado por `dist generate`) | ✅ en cada tag `v*` |
 | Instalador shell | `curl -LsSf https://github.com/exo273/any-mcp-codemode/releases/latest/download/any-mcp-codemode-installer.sh \| sh` | cargo-dist | ✅ |
 | Instalador PowerShell | `irm https://github.com/exo273/any-mcp-codemode/releases/latest/download/any-mcp-codemode-installer.ps1 \| iex` | cargo-dist | ✅ |
-| npm | `npx -y any-mcp-codemode serve` | `publish-npm.yml` con [trusted publishing](https://docs.npmjs.com/trusted-publishers) (OIDC, sin token; procedencia) | ⏳ falta la primera publicación |
+| npm | `npx -y any-mcp-codemode serve` | `publish-npm.yml` con [trusted publishing](https://docs.npmjs.com/trusted-publishers) (OIDC, sin token; procedencia) | ✅ `0.1.0` (staged, aprobada con 2FA) |
 | Docker | `docker run -i --rm -v ./cfg:/config:ro ghcr.io/exo273/any-mcp-codemode` | `docker.yml`, desde los binarios musl del release | ✅ en cada release |
 | MCP Registry | `server.json` (paquete OCI) | `mcp-publisher` | ⏳ cuando exista la primera imagen |
 | Código fuente | `cargo install --git https://github.com/exo273/any-mcp-codemode` | cargo | ✅ |
@@ -35,7 +35,10 @@ x86_64/arm64 (**musl estático**: un binario para cualquier distro y para la ima
 `release.yml` llama a `publish-npm.yml` (cargo-dist `publish-jobs = ["./publish-npm"]`), que
 publica con un token OIDC que genera GitHub Actions. No hay ningún secreto de npm en el repo.
 npm valida el workflow **que llama**, así que el trusted publisher en npmjs.com se configura
-como `exo273` / `any-mcp-codemode` / `release.yml` con **npm publish** permitido.
+como `exo273` / `any-mcp-codemode` / `release.yml`. El job corre `npm stage publish` (siempre permitido para un
+trusted publisher), así que cada versión espera en **Staged Packages** hasta que un mantenedor la aprueba
+con 2FA (`npm stage approve <id>` o npmjs.com). Los releases quedan en verde; la versión npm simplemente
+aún no es pública.
 
 ## Imagen Docker
 

@@ -1,8 +1,10 @@
 name: publish-npm
-# npm trusted publishing (OIDC): no token. Called by release.yml through cargo-dist's
+# npm trusted publishing (OIDC) + staged publishing: no token, and nothing goes live until a
+# maintainer approves it with 2FA on npmjs.com (Staged Packages) or `npm stage approve <id>`.
+# Called by release.yml through cargo-dist's
 # `publish-jobs = ["./publish-npm"]`. npm validates the *calling* workflow, so the trusted
 # publisher on npmjs.com must name `release.yml`.
-# https://docs.npmjs.com/trusted-publishers
+# https://docs.npmjs.com/trusted-publishers · https://docs.npmjs.com/staged-publishing
 
 on:
   workflow_call:
@@ -21,22 +23,32 @@ jobs:
     env:
       PLAN: ${{ inputs.plan }}
     steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
       - name: Fetch the npm package built by cargo-dist
         uses: actions/download-artifact@v8
         with:
           pattern: artifacts-*
           path: npm/
           merge-multiple: true
-      # Trusted publishing needs npm >= 11.5.1 and Node >= 22.14.
+      # Staged publishing needs npm >= 11.15.0 and Node >= 22.14 (trusted publishing: npm >= 11.5.1).
       - uses: actions/setup-node@v6
         with:
           node-version: "24"
           registry-url: "https://registry.npmjs.org"
           package-manager-cache: false
-      - run: npm --version
-      - name: npm publish (OIDC, provenance is automatic)
+      - name: Use an npm that supports staged publishing
+        run: |
+          npm install -g npm@latest
+          npm --version
+      - name: npm stage publish (OIDC; provenance is automatic; approve with 2FA to go live)
         run: |
           for release in $(echo "$PLAN" | jq --compact-output '.releases[] | select([.artifacts[] | endswith("-npm-package.tar.gz")] | any)'); do
             pkg=$(echo "$release" | jq '.artifacts[] | select(endswith("-npm-package.tar.gz"))' --raw-output)
-            npm publish --access public "./npm/${pkg}"
+            # The MCP Registry verifies npm ownership via `mcpName`; cargo-dist can't emit it, so add it here.
+            work=$(mktemp -d) && tar -xzf "./npm/${pkg}" -C "$work"
+            jq --arg n "$(jq -r .name server.json)" '. + {mcpName: $n}' "$work/package/package.json" > "$work/p.json"
+            mv "$work/p.json" "$work/package/package.json"
+            npm stage publish --access public "$work/package"
           done
